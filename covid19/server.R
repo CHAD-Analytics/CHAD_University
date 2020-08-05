@@ -22,16 +22,11 @@ server <- function(input, output,session) {
   addedCounties<-reactiveVal(value = NULL)
   deletedCounties<-reactiveVal(value=NULL)
   
-  observeEvent(input$BranchP, {
+  observeEvent(input$StateInput2, {
     addedCounties(NULL)
     deletedCounties(NULL)
   })
-
-  observeEvent(input$OperationalInputP, {
-      addedCounties(NULL)
-      deletedCounties(NULL)
-  })
-  observeEvent(input$Base, {
+  observeEvent(input$SchoolInput2, {
       addedCounties(NULL)
       deletedCounties(NULL)
   })
@@ -43,7 +38,11 @@ server <- function(input, output,session) {
   # observeEvent(event_data("plotly_click", source = "TEST"), {
   #   county_clicked <- event_data("plotly_click", source = "TEST")
   #   df<-MyCounties()
+<<<<<<< HEAD
+  #   newCounty<-getNewCounty(df,input$SchoolInput, as.integer(county_clicked$curveNumber))
+=======
   #   newCounty<-getNewCounty(df,input$Base, as.integer(county_clicked$curveNumber))
+>>>>>>> 5d94b331dd8dda4a3462583d7d6966744db5ebc7
   #   if(is.null(addedCounties())){ #do nothing
   #   }else{ # see if new county is in addedcounties
   #     myFIPS<-newCounty[[1]][["FIPS"]]
@@ -87,7 +86,7 @@ server <- function(input, output,session) {
   # Step Two
   ###################################################################################################################################################
   MyCounties<-reactive({
-    GetCounties(input$Base,input$Radius, addedCounties(), deletedCounties())    
+    GetCounties(input$SchoolInput,input$Radius, addedCounties(), deletedCounties())    
   })
   
   # Output common statistics -------------------------------------------------------------------------------------------------------------------------------------------
@@ -106,7 +105,7 @@ server <- function(input, output,session) {
   output$PeakBedDate <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
     valueBox(subtitle = "Est Peak Hosp Bed Date",
-             as.Date(PeakBedDates(input$Base)),
+             as.Date(PeakBedDates(input$SchoolInput2)),
              #icon = icon("list-ol"),
              color = "light-blue"
     )
@@ -115,7 +114,7 @@ server <- function(input, output,session) {
   output$PeakICUDate <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
     valueBox(subtitle = "Est Peak ICU Date",
-             as.Date(PeakICUDates(input$Base)),
+             as.Date(PeakICUDates(input$SchoolInput2)),
              #icon = icon("list-ol"),
              color = "light-blue"
     )
@@ -124,7 +123,7 @@ server <- function(input, output,session) {
   output$PeakVentDate <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
     valueBox(subtitle = "Est Peak Ventilator Date",
-             as.Date(PeakVentDates(input$Base)),
+             as.Date(PeakVentDates(input$SchoolInput2)),
              #icon = icon("list-ol"),
              color = "light-blue"
     )
@@ -215,28 +214,28 @@ server <- function(input, output,session) {
   
   output$Est_Active <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
-    valueBox(comma(Estimate_ActiveCases(input$CONUSP,input$Base,MyCounties())),
+    valueBox(comma(Estimate_ActiveCases("CONUS",input$Base,MyCounties())),
              subtitle = "Est Active Cases",
              color = "navy")
   })
   
   output$Est_Recover <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
-    valueBox(comma(Estimate_Recovered(input$CONUSP,input$Base,MyCounties())),
+    valueBox(comma(Estimate_Recovered("CONUS",input$Base,MyCounties())),
              subtitle = "Est Recovered Cases",
              color = "navy")
   })  
   
   output$Est_Testing <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
-    valueBox(comma(Estimate_Testing(input$CONUSP,input$Base,MyCounties())),
+    valueBox(comma(Estimate_Testing("CONUS",input$Base,MyCounties())),
              subtitle = "Estimated Total Tests",
              color = "navy")
   })
   
   output$Est_TestRate <- renderValueBox({
     #MyCounties<-GetCounties(input$Base,input$Radius)
-    valueBox(comma(Estimate_TestRate(input$CONUSP,input$Base,MyCounties())),
+    valueBox(comma(Estimate_TestRate("CONUS",input$Base,MyCounties())),
              subtitle = "Est Testing Rate",
              color = "navy")
   })
@@ -425,7 +424,7 @@ server <- function(input, output,session) {
   output$LocalChoroPlot<-renderPlotly({
     #MyCounties<-GetCounties(input$Base,input$Radius)
     p = tryCatch({
-      PlotLocalChoro(MyCounties(), input$Base, input$TypeLocal)
+      PlotLocalChoro(MyCounties(), input$SchoolInput, input$TypeLocal)
     }, error = function(err) {
       empty_plot("Map Unavailable")
     })
@@ -434,13 +433,9 @@ server <- function(input, output,session) {
   
   #Choice between cases heat map or hospitalizations heat map
   output$SummaryTabChoro<-renderPlotly({
-    GetHeatMap(input$Branch,input$OperationalInput,input$MAJCOMNAF,input$MAJCOMInput,input$NAFInput,
-               input$WingInput, input$SummaryModelType, input$SummaryForecast, input$SummaryStatistic)
+    GetHeatMap(input$SchoolInput,input$SummaryModelType, input$SummaryForecast, input$SummaryStatistic)
   })
-  
-  
-  
-  
+
   # Output Projections  ---------------------------------------------------------------------------------------------------------------------------------------------------------------
   
   
@@ -723,7 +718,61 @@ server <- function(input, output,session) {
                                          `Average New Deaths Per Day`
       )
     }
+    
+    if (input$Metric == "Total Cases"){
+      Inc_Table = NationalDataTable1 %>% top_n(5, wt = `Cases Per 100,000 People`)
       
+<<<<<<< HEAD
+      if (input$MapView == "United States"){
+        Inc_Table = dplyr::select(Inc_Table, State, `Cases Per 100,000 People`, `Total Cases`)
+      } else{
+        Inc_Table = dplyr::select(Inc_Table, Country, `Cases Per 100,000 People`, `Total Cases`)
+      }
+      
+      Inc_Table <- DT::datatable(Inc_Table,
+                                 rownames = FALSE,
+                                 options = list(order = list(1, "desc"),
+                                                dom = 't',
+                                                pageLength = 5))
+      
+    } else if(input$Metric == "Weekly Total Change"){
+      Inc_Table = NationalDataTable1 %>% top_n(5, wt = `Weekly Total Case Change`)
+      
+      if (input$MapView == "United States"){
+        Inc_Table = dplyr::select(Inc_Table, State, `Weekly Total Case Change`, `Total Cases`)
+      } else{
+        Inc_Table = dplyr::select(Inc_Table, Country, `Weekly Total Case Change`, `Total Cases`)
+      }
+      
+      Inc_Table <- DT::datatable(Inc_Table,
+                                 rownames = FALSE, 
+                                 options = list(order = list(1, "desc"),
+                                                dom = 't',
+                                                pageLength = 5)) %>% formatPercentage(c("Weekly Total Case Change"), 1)
+      
+    }else if(input$Metric == "Weekly Change"){
+      Inc_Table = NationalDataTable1 %>% top_n(5, wt = `Weekly Case Change`)
+      
+      if (input$MapView == "United States"){
+        Inc_Table = dplyr::select(Inc_Table, State, `Weekly Case Change`, `Total Cases`)
+      } else{
+        Inc_Table = dplyr::select(Inc_Table, Country, `Weekly Case Change`, `Total Cases`)
+      }
+      
+      Inc_Table <- DT::datatable(Inc_Table,
+                                 rownames = FALSE, 
+                                 options = list(order = list(1, "desc"),
+                                                dom = 't',
+                                                pageLength = 5)) %>% formatPercentage(c("Weekly Case Change"), 1)
+      
+    }else if(input$Metric == "Weekly Cases"){
+      Inc_Table = NationalDataTable1 %>% top_n(5, wt = `Weekly Cases Per Capita`)
+      
+      if (input$MapView == "United States"){
+        Inc_Table = dplyr::select(Inc_Table, State, `Weekly Cases Per Capita`, `Weekly Case Change`)
+      } else{
+        Inc_Table = dplyr::select(Inc_Table, Country, `Weekly Cases Per Capita`, `Weekly Case Change`)
+=======
       if (input$Metric == "Total Cases"){
         Inc_Table = NationalDataTable1 %>% top_n(5, wt = `Cases Per 100,000 People`)
         
@@ -784,7 +833,16 @@ server <- function(input, output,session) {
                                                   dom = 't',
                                                   pageLength = 5)) %>% formatPercentage(c("Weekly Case Change"), 1)
         
+>>>>>>> 5d94b331dd8dda4a3462583d7d6966744db5ebc7
       }
+      
+      Inc_Table <- DT::datatable(Inc_Table,
+                                 rownames = FALSE, 
+                                 options = list(order = list(1, "desc"),
+                                                dom = 't',
+                                                pageLength = 5)) %>% formatPercentage(c("Weekly Case Change"), 1)
+      
+    }
     
     
     Inc_Table
@@ -920,7 +978,7 @@ server <- function(input, output,session) {
     
     if (input$MapView == "World"){
       NationalDataTable1 = NationalDataTable
-
+      
       select <- which(NationalDataTable1$Country == "United States" & NationalDataTable1$State != "United States")
       NationalDataTable1 = NationalDataTable1[-c(select),]
       
@@ -980,7 +1038,7 @@ server <- function(input, output,session) {
     NationalDataTable1 = DT::formatPercentage(NationalDataTable1, c("Weekly Total Case Change", "Weekly Case Change"), 1)
     
     NationalDataTable1
-
+    
   })
   
   output$CountyDataTable1<-DT::renderDataTable({
@@ -993,7 +1051,7 @@ server <- function(input, output,session) {
   })
   
   
-  ###### Filter installations by branch and operational status
+  ###### Filter Universities by state
   ###### Filter works for local and projection tabs############
   OperationalListP<- reactive({
     #Once select service, select active, guard, reserve
@@ -1510,12 +1568,12 @@ server <- function(input, output,session) {
       paste("MTFSummary-", Sys.Date(), ".csv", sep="")
     },
     content = function(file) {
-
+      
       forecastbaselist<-dplyr::filter(AFBaseLocations,Branch %in% input$Branch)                        
       forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE) 
-
+      
       FilteredDT1<-dplyr::filter(MTFSummaryReport,Installation %in% forecastbaselist)                        
-
+      
       if(input$OperationalInput != "All") {
         forecastbaselist<-dplyr::filter(AFBaseLocations,Operational %in% input$OperationalInput)                        
         forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE)         
@@ -1575,124 +1633,124 @@ server <- function(input, output,session) {
   # Output Report ------------------------------------------------------------------------------------------------------------------------------------------------------------------
   
   output$MTFSummaryP <- downloadHandler(
-      filename = function() {
-        paste("MTF_Plots-", Sys.Date(),".pptx", sep="")
-      },
-
-      content = function(file) {
-
-          forecastbaselist<-dplyr::filter(AFBaseLocations,Branch %in% input$Branch)
-          forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE)
-
-          FilteredDT1<-dplyr::filter(MTFSummaryReport,Installation %in% forecastbaselist)
-
-          if(input$OperationalInput != "All") {
-            forecastbaselist<-dplyr::filter(AFBaseLocations,Operational %in% input$OperationalInput)
-            forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE)
-            FilteredDT1<-dplyr::filter(FilteredDT1,Installation %in% forecastbaselist)
-          }
-
-          if (input$MAJCOMInput == "All") {
-            FTPrint<-FilteredDT1
-          } else {
-            FTPrint<-dplyr::filter(FilteredDT1,MAJCOM %in% input$MAJCOMInput)
-          }
-
-          #Create a new powerpoint document
-          doc <- read_pptx() 
-
-          for (i in 1:(nrow(FTPrint))){
-          #LocalHealthPlot1
-
-              ChosenBase <- ForecastDataTableCases$Installation[i]
-              value = NULL
-              IncludedCounties<-GetCounties(ChosenBase,50,value,value)
-
-              DailyChart <- CovidCasesPerDayChart(IncludedCounties)
-              DailyChart <- dplyr::filter(DailyChart, ForecastDate >= DailyChart$ForecastDate[1] + 35)
-              
-              plotDaily <- ggplot(DailyChart) +
-                geom_line(aes(x=ForecastDate, y=value, colour = variable), size = 0.5) +
-                scale_colour_manual(values=c("Blue", "Red")) +
-                xlab('Date') +
-                ylab('Number of People') +
-                theme_bw() +
-                theme(plot.title = element_text(face = "bold", size = 15, family = "sans"),
-                      axis.title = element_text(face = "bold", size = 11, family = "sans"),
-                      axis.text.x = element_text(angle = 60, hjust = 1),
-                      axis.line = element_line(color = "black"),
-                      legend.position = "top",
-                      plot.background = element_blank(),
-                      panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank(),
-                      panel.border = element_blank()) +
-                scale_x_date(date_breaks = "1 week") +
-                labs(color='')
-
-              #plotDaily <- ggplotly(plotDaily)
-              #plotDaily <- plotDaily %>% layout(legend = list(orientation = "h",   # show entries horizontally
-                                                              #xanchor = "center",  # use center of legend as anchor
-                                                              #x = 0.5,
-                                                              #y = 1.2)) #%>% config(displayModeBar = FALSE)
-              #plotDaily
-
+    filename = function() {
+      paste("MTF_Plots-", Sys.Date(),".pptx", sep="")
+    },
+    
+    content = function(file) {
+      
+      forecastbaselist<-dplyr::filter(AFBaseLocations,Branch %in% input$Branch)
+      forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE)
+      
+      FilteredDT1<-dplyr::filter(MTFSummaryReport,Installation %in% forecastbaselist)
+      
+      if(input$OperationalInput != "All") {
+        forecastbaselist<-dplyr::filter(AFBaseLocations,Operational %in% input$OperationalInput)
+        forecastbaselist<-sort(unique(forecastbaselist$Base), decreasing = FALSE)
+        FilteredDT1<-dplyr::filter(FilteredDT1,Installation %in% forecastbaselist)
+      }
+      
+      if (input$MAJCOMInput == "All") {
+        FTPrint<-FilteredDT1
+      } else {
+        FTPrint<-dplyr::filter(FilteredDT1,MAJCOM %in% input$MAJCOMInput)
+      }
+      
+      #Create a new powerpoint document
+      doc <- read_pptx() 
+      
+      for (i in 1:(nrow(FTPrint))){
+        #LocalHealthPlot1
         
-              #LocalHealthPlot2
-              CumulChart <- CovidCasesCumChart(IncludedCounties)
-              CumulChart <- dplyr::filter(CumulChart, ForecastDate >= CumulChart$ForecastDate[1] + 35)
-
-              #Plot for local area cumulative cases
-              plotTot <- ggplot(CumulChart) +
-                geom_line(aes(x=ForecastDate, y=value, colour = variable), size = 0.5) +
-                scale_colour_manual(values=c("Blue", "Red", "Green"))+
-                xlab('Date') +
-                ylab('Number of People') +
-                theme_bw() +
-                theme(plot.title = element_text(face = "bold", size = 15, family = "sans"),
-                      axis.title = element_text(face = "bold", size = 11, family = "sans"),
-                      axis.text.x = element_text(angle = 60, hjust = 1),
-                      axis.line = element_line(color = "black"),
-                      legend.position = "top",                      
-                      plot.background = element_blank(),
-                      panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank(),
-                      panel.border = element_blank()) +
-                scale_x_date(date_breaks = "1 week")
-              
-              # plotTot <- ggplotly(plotTot)
-              # plotTot <- plotTot %>% layout(legend = list(orientation = "h",   # show entries horizontally
-              #                                             xanchor = "center",  # use center of legend as anchor
-              #                                             x = 0.5,
-              #                                             y = 1.2)) #%>% config(displayModeBar = FALSE)
-              # plotTot
-
-              # grid.arrange(plotDaily,plotTot)
-              #
-              # grid.arrange(grobs=lapply(list(plotDaily,plotTot), grobTree), ncol=2)
-              #
-              # grid.arrange(grobTree(plotDaily),grobTree(plotTot), ncol=2)
-              #
-              # grid.arrange(plotDaily,plotTot,ncol=2,top="Main Title")
-              #
-              # plotDaily
-              # plotTot
-              #
-              # par(mfcol = c(1, 1))
-              # pobj <- grid.arrange(grobs = list(plotDaily,plotTot),nrow=1)
-              #
-              # doc %>% ph_with(dml(ggobj = plotTot),location = ph_location_right())
-              
-              doc <- add_slide(x=doc,layout="Two Content",master='Office Theme')
-              titleline <- paste("Plots for ",FTPrint$Installation[i])
-              doc <- ph_with(x = doc, value = titleline,location = ph_location_type(type="title") )
-              doc <- ph_with(x=doc,value=plotDaily,location = ph_location_left())
-              doc <- ph_with(x=doc,value=plotTot,location = ph_location_right())
-          }
-
-          print(doc,target = file)
+        ChosenBase <- ForecastDataTableCases$Installation[i]
+        value = NULL
+        IncludedCounties<-GetCounties(ChosenBase,50,value,value)
+        
+        DailyChart <- CovidCasesPerDayChart(IncludedCounties)
+        DailyChart <- dplyr::filter(DailyChart, ForecastDate >= DailyChart$ForecastDate[1] + 35)
+        
+        plotDaily <- ggplot(DailyChart) +
+          geom_line(aes(x=ForecastDate, y=value, colour = variable), size = 0.5) +
+          scale_colour_manual(values=c("Blue", "Red")) +
+          xlab('Date') +
+          ylab('Number of People') +
+          theme_bw() +
+          theme(plot.title = element_text(face = "bold", size = 15, family = "sans"),
+                axis.title = element_text(face = "bold", size = 11, family = "sans"),
+                axis.text.x = element_text(angle = 60, hjust = 1),
+                axis.line = element_line(color = "black"),
+                legend.position = "top",
+                plot.background = element_blank(),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank()) +
+          scale_x_date(date_breaks = "1 week") +
+          labs(color='')
+        
+        #plotDaily <- ggplotly(plotDaily)
+        #plotDaily <- plotDaily %>% layout(legend = list(orientation = "h",   # show entries horizontally
+        #xanchor = "center",  # use center of legend as anchor
+        #x = 0.5,
+        #y = 1.2)) #%>% config(displayModeBar = FALSE)
+        #plotDaily
+        
+        
+        #LocalHealthPlot2
+        CumulChart <- CovidCasesCumChart(IncludedCounties)
+        CumulChart <- dplyr::filter(CumulChart, ForecastDate >= CumulChart$ForecastDate[1] + 35)
+        
+        #Plot for local area cumulative cases
+        plotTot <- ggplot(CumulChart) +
+          geom_line(aes(x=ForecastDate, y=value, colour = variable), size = 0.5) +
+          scale_colour_manual(values=c("Blue", "Red", "Green"))+
+          xlab('Date') +
+          ylab('Number of People') +
+          theme_bw() +
+          theme(plot.title = element_text(face = "bold", size = 15, family = "sans"),
+                axis.title = element_text(face = "bold", size = 11, family = "sans"),
+                axis.text.x = element_text(angle = 60, hjust = 1),
+                axis.line = element_line(color = "black"),
+                legend.position = "top",                      
+                plot.background = element_blank(),
+                panel.grid.major = element_blank(),
+                panel.grid.minor = element_blank(),
+                panel.border = element_blank()) +
+          scale_x_date(date_breaks = "1 week")
+        
+        # plotTot <- ggplotly(plotTot)
+        # plotTot <- plotTot %>% layout(legend = list(orientation = "h",   # show entries horizontally
+        #                                             xanchor = "center",  # use center of legend as anchor
+        #                                             x = 0.5,
+        #                                             y = 1.2)) #%>% config(displayModeBar = FALSE)
+        # plotTot
+        
+        # grid.arrange(plotDaily,plotTot)
+        #
+        # grid.arrange(grobs=lapply(list(plotDaily,plotTot), grobTree), ncol=2)
+        #
+        # grid.arrange(grobTree(plotDaily),grobTree(plotTot), ncol=2)
+        #
+        # grid.arrange(plotDaily,plotTot,ncol=2,top="Main Title")
+        #
+        # plotDaily
+        # plotTot
+        #
+        # par(mfcol = c(1, 1))
+        # pobj <- grid.arrange(grobs = list(plotDaily,plotTot),nrow=1)
+        #
+        # doc %>% ph_with(dml(ggobj = plotTot),location = ph_location_right())
+        
+        doc <- add_slide(x=doc,layout="Two Content",master='Office Theme')
+        titleline <- paste("Plots for ",FTPrint$Installation[i])
+        doc <- ph_with(x = doc, value = titleline,location = ph_location_type(type="title") )
+        doc <- ph_with(x=doc,value=plotDaily,location = ph_location_left())
+        doc <- ph_with(x=doc,value=plotTot,location = ph_location_right())
+      }
+      
+      print(doc,target = file)
     }
   )
-
+  
   
   output$report <- downloadHandler(
     # For PDF output, change this to "report.pdf"
@@ -1731,7 +1789,7 @@ server <- function(input, output,session) {
       
     }
   )
-
+  
   
   
   # Step Three

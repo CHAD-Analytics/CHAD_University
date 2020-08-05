@@ -51,133 +51,73 @@ ui <- tagList(
                 dashboardSidebar(width = 300,
                                  sidebarMenu(id="tabs",
                                              #tags$p(paste0("* Current as of ",format(Sys.Date(),format = "%d %B %Y")," at 0600 EST *")),
-                                             
-                                             
-                                             
-                                             
                                              # MAJCOM Summary Projection sidebar controls
                                              ######################################################################################################################
-                                             
-                                             
                                              conditionalPanel(condition="input.tabselected==1",
                                                               "MAJCOM Summary Inputs",
                                                               tabName = "MAJCOMsummary",
                                                               icon = icon("sliders-h"),
                                                               div(id = "single", style="display: none;", numericInput("tckt", "Ticket Number : ", 12345,  width = 300)),
-                                                          
-                                                          
-                                                              selectInput("Branch",
-                                                                          "Service Branch:", 
-                                                                          list(`Branch` = BranchList ),
-                                                                          selected = c("Air Force")),
-                                                              
-                                                              selectInput("OperationalInput",
-                                                                          "Operational Status:", 
-                                                                          list(`Status` = OperationalList),
-                                                                          selected = c("Active")),
-                                                              
-                                                              conditionalPanel(condition = "input.Branch == 'Air Force'",                                           
-                                                                               radioButtons("MAJCOMNAF",
-                                                                                            "MAJCOM or NAF Filter: ",
-                                                                                            c("MAJCOM"="MAJCOM"),
-                                                                                            selected = c("MAJCOM")), 
-                                                                               
-                                                                               conditionalPanel(condition = "input.MAJCOMNAF == 'MAJCOM'",
-                                                                                                selectInput("MAJCOMInput",
-                                                                                                            "MAJCOM:", 
-                                                                                                            list(`MAJCOM` = MAJCOMList ), 
-                                                                                                            selectize = FALSE)),
-                                                                               
-                                                                               # conditionalPanel(condition = "input.MAJCOMNAF == 'NAF'",
-                                                                               #                  selectInput("NAFInput",
-                                                                               #                              "Numbered Air Forces:", 
-                                                                               #                              choices=NAFList,
-                                                                               #                              selected = c("All")),
-                                                                               #                  selectInput("WingInput",
-                                                                               #                              "Wing:", 
-                                                                               #                              list(`Wings` = WingList),
-                                                                               #                              selectize = FALSE),
-                                                                               #                  selectInput("GroupInput",
-                                                                               #                              "Group:",
-                                                                               #                              choices=NULL,
-                                                                               #                              selectize = FALSE))
-                                                                               )
-                                                              
-                                                              
+                                                              selectInput("StateInput",
+                                                                          "Select State:", 
+                                                                          list(`State` = StateList ),
+                                                                          selected = c("GA")),
+                                                              selectInput("SchoolInput",
+                                                                          "Select University:", 
+                                                                          list(`School` = UniversityList),
+                                                                          selected = c("Georgia Institute of Tecnology"))
                                              ),
-                                             
-                                             
-                                             
                                              
                                              # National/International sidebar controls
                                              ######################################################################################################################
-                                             
                                              
                                              conditionalPanel(condition="input.tabselected==2",
                                                               "International/National Summary",
                                                               icon = icon("sliders-h"),
                                                               div(id = "single", style="display: none;", numericInput("tckt", "Ticket Number : ", 12345,  width = 300)),
-                                                              
-                                                              radioButtons("MapView",
-                                                                           "Map Selection: ",
-                                                                           c("World"="World",
-                                                                             "United States"="United States",
-                                                                             "Europe"="Europe",
-                                                                             "Africa"="Africa",
-                                                                             "Asia"="Asia",
-                                                                             "Oceania"="Oceania"                                                                             
-                                                                             ),
-                                                                           selected = "United States"),
-                                                              
-                                                              radioButtons("Metric",
-                                                                           "Metric: ",
-                                                                           c("Total Cases" = "Total Cases",
-                                                                             "Weekly Cases per Capita (100,000)" = "Weekly Cases",
-                                                                             "Weekly Total Case Change" = "Weekly Total Change",
-                                                                             "Weekly Case Change" = "Weekly Change"),
-                                                                           selected = "Weekly Cases"),
-                                                              
-                                                              conditionalPanel(condition = "input.Metric == 'Total Cases'",
-                                                                               radioButtons("MapScale",
-                                                                                            "Scaling Selection: ",
-                                                                                            c("Log"="Log",
-                                                                                              "Linear"="Linear"),
-                                                                                            selected = "Log")
+
+                                                               radioButtons("MapView",
+                                                                            "Map Selection: ",
+                                                                            c("World"="World",
+                                                                              "United States"="United States",
+                                                                              "Europe"="Europe",
+                                                                              "Africa"="Africa",
+                                                                              "Asia"="Asia",
+                                                                              "Oceania"="Oceania"                                                                             
+                                                                            ),
+                                                                            selected = "United States"),
+                                                               
+                                                               radioButtons("Metric",
+                                                                            "Metric: ",
+                                                                            c("Total Cases" = "Total Cases",
+                                                                              "Weekly Cases per Capita (100,000)" = "Weekly Cases",
+                                                                              "Weekly Total Case Change" = "Weekly Total Change",
+                                                                              "Weekly Case Change" = "Weekly Change"),
+                                                                            selected = "Weekly Cases"),
+                                                               
+                                                               conditionalPanel(condition = "input.Metric == 'Total Cases'",
+                                                                                radioButtons("MapScale",
+                                                                                             "Scaling Selection: ",
+                                                                                             c("Log"="Log",
+                                                                                               "Linear"="Linear"),
+                                                                                             selected = "Log")                                                                               
                                                               )
                                                               
-                                                              
                                              ),
-                                             
-                                             
-                                             
                                              
                                              # Base/Radius selector for Local Health and Projections sidebar controls
                                              ######################################################################################################################
                                              
                                              
                                              conditionalPanel(condition="input.tabselected == 3 || input.tabselected == 4",
-                                                              
-                                                              selectInput("BranchP",
-                                                                          "Service Branch:", 
-                                                                          list(`Branch` = BranchList),
-                                                                          selected = c("Air Force")),
-                                                              
-                                                              radioButtons("CONUSP",
-                                                                           "CONUS or OCONUS: ",
-                                                                           c("CONUS"="CONUS",
-                                                                             "OCONUS"="OCONUS"),
-                                                                           selected = "CONUS"),  
-                                                              
-                                                              selectInput("OperationalInputP",
-                                                                          "Operational Status:", 
-                                                                          list(`Status` = OperationalListP),
-                                                                          selected = c("Active")),
-                                                              
-                                                              selectInput("Base",
-                                                                          "Choose your base:",
-                                                                          list(`Status` = BaseListP),
-                                                                          selected = c("Eglin Air Force Base")),
-                                                              
+                                                              selectInput("StateInput2",
+                                                                          "Select State:", 
+                                                                          list(`State` = StateList ),
+                                                                          selected = c("GA")),
+                                                              selectInput("SchoolInput2",
+                                                                          "Select University:", 
+                                                                          list(`School` = UniversityList),
+                                                                          selected = c("Georgia Institute of Tecnology")),
                                                               sliderInput("Radius",
                                                                           "Choose your local radius (miles):",
                                                                           min = 1,
@@ -185,22 +125,14 @@ ui <- tagList(
                                                                           value = 50)  
                                               ),
                                              
-                                             
-                                             
-                                             
                                              # State/County map selector for Local Health sidebar controls
                                              ######################################################################################################################
-                                             
-                                             
                                              conditionalPanel(condition="input.tabselected==3",
                                                               "Current Local Health Inputs",
                                                               tabName = "localHealthInput",
                                                               icon = icon("map-marker-alt"),
                                                               div(id = "single", style="display: none;", numericInput("tckt", "Ticket Number : ", 12345,  width = 300))
                                              ),
-                                             
-                                             
-                                             
                                              
                                              # Local Health Projections sidebar controls
                                              ######################################################################################################################
@@ -363,10 +295,6 @@ ui <- tagList(
                                 )
                               ),
                               
-                              
-                              
-                              
-                              
                               # MAJCOM Projections Page
                               ######################################################################################################################
                               
@@ -405,7 +333,18 @@ ui <- tagList(
                                   )
                                 ),
                                   #box(plotOutput("HotSpot", height = 600))),
+<<<<<<< HEAD
+                                  box(
+                                      downloadButton('downloadData', 'Download Full Dataset'),
+                                      downloadButton('downloadFilteredData', 'Download Filtered Dataset (Table Above)'),
+                                      downloadButton('HotSpotData', 'Download Hotspot Dataset: 50 Mile Radius'),
+                                      downloadButton('HotSpotDataOneMile', 'Download Hotspot Dataset: Single County'),
+                                      downloadButton('MTFSummaryT', 'MTF Summary Table'),
+                                      downloadButton('MTFSummaryP', 'MTF Summary Plots'),
+                                      title = "University Summaries",
+=======
                                   box(title = "Base Summaries",
+>>>>>>> 5d94b331dd8dda4a3462583d7d6966744db5ebc7
                                       solidHeader=T,
                                       align = "left",
                                       height = 900,
