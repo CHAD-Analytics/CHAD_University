@@ -1,4 +1,19 @@
 # load fips_codes object from tigris package
+cimd<-cbind(cimd1,cimd2)
+cimd<-cbind(cimd,cimd3)
+cimd<-cbind(cimd,cimd4)
+cimd<-cbind(cimd,cimd5)
+cimd<-cbind(cimd,cimd6)
+cimd<-cbind(cimd,cimd7)
+cimd<-cbind(cimd,cimd8)
+himd<-cbind(himd1,himd2)
+himd<-cbind(himd,himd3)
+himd<-cbind(himd,himd4)
+himd<-cbind(himd,himd5)
+himd<-cbind(himd,himd6)
+himd<-cbind(himd,himd7)
+himd<-cbind(himd,himd8)
+
   data("fips_codes", package = "tigris")
  
 # get state infomration based on county fips code
